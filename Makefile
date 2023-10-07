@@ -1,11 +1,27 @@
-OUTDIR = ./build
+.PHONY: all clean
+
+CC = gcc
+
+BUILDDIR = ./build
 SRCDIR = ./src
 INCDIR = ./include
+OBJECTS = $(BUILDDIR)/db_communication.o \
+		  $(BUILDDIR)/main.o
 
+MAIN_OBJ = main
 
-work:
-	gcc src/db_communication.c -o db_communication.o -c
-	gcc -I ./include main.c -o main.o -c
-	gcc -o main main.o db_communication.o
-	./main
-	rm -rf main *.o
+INC += -I$(INCDIR)
+
+COMPILE = $(CC) $(INC) -c "$<" -o "$@"
+LINK=$(CC) -o "$@"
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	$(COMPILE)
+
+all: $(MAIN_OBJ)
+
+$(MAIN_OBJ): $(OBJECTS)
+	$(LINK) $(OBJECTS)
+
+clean:
+	rm -rf $(BUILDDIR)/*
